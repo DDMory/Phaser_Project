@@ -1,11 +1,13 @@
 import ASSETS from '../assets.js';
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, enemyID) {
-    super(scene, x, y, ASSETS.spritesheet.torch.key, enemyID);
+  constructor(scene, x, y, enemyID, spriteKey) {
+    super(scene, x, y, spriteKey, enemyID);
     scene.add.existing(this);
 
+    this.spriteKey = spriteKey;
     this.scene = scene;
+
     this.health = 10;
     this.strength = 3;
 
@@ -17,7 +19,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.originalX = x;
     this.originalY = y;
 
-    this.play('idle_torch');
+    this.play('idle_' + this.spriteKey);
+
   }
 
   attack = (target, onCompleteCallback) => {
@@ -43,9 +46,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
           this.scene.cameras.main.shake(250, 0.015);
         }
         target.takeHit(finalDamage);
-        this.play('attack_torch');
 
-        this.once('animationcomplete-attack_torch', () => {
+        const attackAnim = 'attack_' + this.spriteKey;
+        this.play(attackAnim);
+
+
+        this.once('animationcomplete-' + attackAnim, () => {
           this.scene.tweens.add({
             targets: this,
             x: this.originalX,
@@ -53,7 +59,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
             ease: 'Sine.easeInOut',
             onComplete: () => {
               this.isAttacking = false;
-              this.play('idle_torch');
+              this.play('idle_' + this.spriteKey);
 
               if (onCompleteCallback) onCompleteCallback();
             },
@@ -91,7 +97,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (this.isDefending) return;
     this.isDefending = true;
 
-    this.play('walking_torch');
+    this.play('walking_' + this.spriteKey);
 
     this.scene.tweens.add({
       targets: this,
@@ -101,7 +107,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       yoyo: true,
       onComplete: () => {
         this.isDefending = false;
-        this.play('idle_torch');
+        this.play('idle_' + this.spriteKey);
 
         if (onCompleteCallback) {
           onCompleteCallback();
@@ -143,7 +149,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   showText = (text, color) => {
     const damageText = this.scene.add
-      .text(this.x, this.y - this.height, text, {
+      .text(this.x, this.y - 100, text, {
         fontSize: '50px',
         color: Phaser.Display.Color.ValueToColor(color).rgba,
         stroke: '#000000',

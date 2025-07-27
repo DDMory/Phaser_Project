@@ -22,15 +22,13 @@ export class Start extends Phaser.Scene {
         return;
       }
 
-      /*
+
       this.onAction = true;
       this.disableAllActions();
       this.player.attack(this.enemy, () => {
         this.onAction = false;
         this.enableAllActions();
-      });*/
-
-      this.enemy.attack(this.player);
+      });
     });
 
     this.action_defense.on('pointerdown', () => {
@@ -62,7 +60,14 @@ export class Start extends Phaser.Scene {
 
   adicionarObjetos() {
     this.player = new Player(this, 1280 / 2 - 320, 720 / 2, 0);
-    this.enemy = new Enemy(this, 1280 / 2 + 320, 720 / 2, 0);
+
+    //seletor de inimigo
+    var enemyKey = Math.floor(Math.random() * 2);
+
+    if(enemyKey ==  1)
+      this.enemy = new Enemy(this, 1280 / 2 + 320, 720 / 2, 0, 'torch');
+    if(enemyKey ==  0)
+      this.enemy = new Enemy(this, 1280 / 2 + 320, 720 / 2, 0, 'pawn_red');
 
     this.action_attack = this.add
       .text(1280 / 2 - 500, 720 - 220, 'Attack!!!')

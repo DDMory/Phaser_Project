@@ -9,8 +9,9 @@ export class Preloader extends Phaser.Scene
         this.load.spritesheet('purple_knight', '../../assets/Warrior_Purple.png', { frameWidth: 192, frameHeight: 192 }),
         this.load.spritesheet('meat','../../assets/M_Spawn.png', {frameWidth: 128, frameHeight: 128 })
         this.load.spritesheet('torch', '../../assets/Torch_Yellow.png', {frameWidth: 192, frameHeight: 192 })
+        this.load.spritesheet('pawn_red', '../../assets/Pawn_Red.png', {frameWidth: 192, frameHeight: 192 })
     }
-
+    
     create() {
 
         //Animações
@@ -58,6 +59,24 @@ export class Preloader extends Phaser.Scene
             yoyo:false,
             frameRate: 8,
         })
+
+            //Pawn Red
+        this.anims.create({
+            key: 'idle_pawn_red',
+            frames: this.anims.generateFrameNames('pawn_red', {start: 0, end: 5}),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'walking_pawn_red',
+            frames: this.anims.generateFrameNames('pawn_red', {start: 6, end: 11}),
+            frameRate: 10
+        });
+        this.anims.create({
+            key: 'attack_pawn_red',
+            frames: this.anims.generateFrameNames('pawn_red', {start: 12, end: 17}),
+            frameRate: 12
+        });
 
             //Meat
         this.anims.create({
