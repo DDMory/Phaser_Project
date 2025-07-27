@@ -11,6 +11,7 @@ export class Start extends Phaser.Scene {
     this.action_defense;
     this.action_heal;
     this.onAction = false;
+    this.currentTurn = 'PLAYER';
   }
 
   create() {
@@ -18,16 +19,17 @@ export class Start extends Phaser.Scene {
 
     // ✅ O 'while' foi removido. Os listeners são adicionados apenas uma vez.
     this.action_attack.on('pointerdown', () => {
-      if (this.onAction) {
+      if (this.currentTurn !== 'PLAYER' || this.onAction) {
         return;
       }
 
 
       this.onAction = true;
       this.disableAllActions();
+      
       this.player.attack(this.enemy, () => {
-        this.onAction = false;
-        this.enableAllActions();
+        this.currentTurn = 'ENEMY';
+        this.time.delayedCall(500, this.handleEnemyTurn, [], this);
       });
     });
 
@@ -90,5 +92,30 @@ export class Start extends Phaser.Scene {
     this.action_attack.setInteractive().setColor('#FFF');
     this.action_defense.setInteractive().setColor('#FFF');
     this.action_heal.setInteractive().setColor('#FFF');
+  }
+
+  handleEnemyTurn() {
+    if (this.player.active && this.enemy.active) {
+      
+      var actionPercent = Math.random();
+      if(actionPercent <= 0.65){
+        this.enemy.attack(this.player, () => {
+          
+          this.currentTurn = 'PLAYER'; 
+          this.onAction = false;       
+          this.enableAllActions();  
+             
+        });
+      }else if(actionPercent > 0.65 && this.enemy.health < Math.floor(this.enemy.health / 0.35)){
+        this.enemy.heal();
+
+        this.currentTurn = 'PLAYER'; 
+        this.onAction = false;       
+        this.enableAllActions();     
+      }
+    } else {
+      this.onAction = false;
+      this.enableAllActions();
+    }
   }
 }
