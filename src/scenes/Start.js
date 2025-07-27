@@ -12,6 +12,8 @@ export class Start extends Phaser.Scene {
     this.action_heal;
     this.onAction = false;
     this.currentTurn = 'PLAYER';
+    this.defenseSelected = false;
+    
   }
 
   create() {
@@ -19,9 +21,8 @@ export class Start extends Phaser.Scene {
 
     // ✅ O 'while' foi removido. Os listeners são adicionados apenas uma vez.
     this.action_attack.on('pointerdown', () => {
-      if (this.currentTurn !== 'PLAYER' || this.onAction) {
-        return;
-      }
+      if (this.currentTurn !== 'PLAYER' || this.onAction) return;
+
 
 
       this.onAction = true;
@@ -34,22 +35,24 @@ export class Start extends Phaser.Scene {
     });
 
     this.action_defense.on('pointerdown', () => {
-      if (this.onAction) return;
+      if (this.currentTurn !== 'PLAYER' || this.onAction) return;
+      
       this.onAction = true;
+      this.defenseSelected = true;
+      this.player.isDefending = true;
       this.disableAllActions();
-      this.player.defense(() => {
-        this.onAction = false;
-        this.enableAllActions();
-      });
+      this.passTurnToEnemy();
+    
     });
 
     this.action_heal.on('pointerdown', () => {
-      if (this.onAction) return;
+      if (this.currentTurn !== 'PLAYER' || this.onAction) return;
+
       this.onAction = true;
       this.disableAllActions();
+
       this.player.heal(() => {
-        this.onAction = false;
-        this.enableAllActions();
+        this.passTurnToEnemy();
       });
     });
   }
@@ -94,6 +97,11 @@ export class Start extends Phaser.Scene {
     this.action_heal.setInteractive().setColor('#FFF');
   }
 
+  passTurnToEnemy() {
+    this.currentTurn = 'ENEMY';
+    this.time.delayedCall(500, this.handleEnemyTurn, [], this);
+  }
+
   handleEnemyTurn() {
     if (this.player.active && this.enemy.active) {
       
@@ -104,7 +112,7 @@ export class Start extends Phaser.Scene {
           this.currentTurn = 'PLAYER'; 
           this.onAction = false;       
           this.enableAllActions();  
-             
+
         });
       }else if(actionPercent > 0.65 && this.enemy.health < Math.floor(this.enemy.health / 0.35)){
         this.enemy.heal();

@@ -42,10 +42,18 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       duration: 400,
       ease: 'Sine.easeInOut',
       onComplete: () => {
-        if (isCritical) {
-          this.scene.cameras.main.shake(250, 0.015);
+        if(target.isDefending){
+          
+          target.defense();
+          target.showText('Defendido!', '#00BFFF');
+          target.isDefending = false; 
+
+        }else{
+          if (isCritical) {
+            this.scene.cameras.main.shake(250, 0.015);
+          }
+          target.takeHit(finalDamage);
         }
-        target.takeHit(finalDamage);
 
         const attackAnim = 'attack_' + this.spriteKey;
         this.play(attackAnim);
