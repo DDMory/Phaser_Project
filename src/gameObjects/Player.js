@@ -52,7 +52,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   };
 
   defense = (onCompleteCallback) => {
-    if (this.isDefending) { // Previne que a defesa seja chamada de novo se já estiver defendendo
+    if (this.isDefending) {
         if(onCompleteCallback) onCompleteCallback();
         return;
     }
@@ -66,7 +66,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       ease: 'Sine.easeInOut',
       yoyo: true,
       onComplete: () => {
-        this.isDefending = false;
+        // O estado de defesa é resetado pelo inimigo ao atacar
         this.play('idle_' + this.spriteKey);
         if (onCompleteCallback) onCompleteCallback();
       },

@@ -15,7 +15,6 @@ export class MainMenu extends Phaser.Scene {
       {
         fontSize: '72px',
         fill: '#ffffff',
-        fontFamily: 'Brush Script',
         fontStyle: 'bold',
         stroke: '#000000',
         strokeThickness: 6

@@ -5,8 +5,7 @@ import { GameOver } from './scenes/GameOver.js';
 
 const config = {
   type: Phaser.AUTO,
-  title: 'Overlord Rising',
-  description: '',
+  title: 'Batalha de Turnos',
   parent: 'game-container',
   width: 1280,
   height: 720,
@@ -14,7 +13,7 @@ const config = {
   pixelArt: false,
   scene: [
     Preloader, 
-    MainMenu,
+    MainMenu, 
     Start, 
     GameOver
   ],
