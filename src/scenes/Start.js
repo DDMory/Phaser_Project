@@ -29,9 +29,9 @@ export class Start extends Phaser.Scene {
     });
 
     this.events.on('enemy-defeated', this.updateScore, this);
+    this.events.on('enemy-defeated', this.choiceDialog, this);
 
-    this.adicionarObjetos();
-
+    this.summomCharacters();
     
     this.action_attack.on('pointerdown', () => {
       if (this.currentTurn !== 'PLAYER' || this.onAction) return;
@@ -70,27 +70,25 @@ export class Start extends Phaser.Scene {
     });
   }
 
+  //metodo update
   update() {
+
+    //verificar se o player morreu
     if (this.player && !this.player.active) {
       this.scene.start('GameOver');
     }
   }
   
+  //atualizar pontuação
   updateScore(points) {
     this.score += points;
     this.scoreText.setText('Pontos: ' + this.score);
   }
 
-  adicionarObjetos() {
+  //Inocar os personagens no começo de tudo
+  summomCharacters() {
     this.player = new Player(this, 1280 / 2 - 320, 720 / 2, 0);
-
-    //seletor de inimigo
-    var enemyKey = Math.floor(Math.random() * 2);
-
-    if(enemyKey ==  1)
-      this.enemy = new Enemy(this, 1280 / 2 + 320, 720 / 2, 0, 'torch');
-    if(enemyKey ==  0)
-      this.enemy = new Enemy(this, 1280 / 2 + 320, 720 / 2, 0, 'pawn_red');
+    this.spawnNewEnemy()
 
     this.action_attack = this.add
       .text(1280 / 2 - 500, 720 - 220, 'Attack!!!')
@@ -103,23 +101,28 @@ export class Start extends Phaser.Scene {
       .setInteractive();
   }
 
+  
+  //desativas botões
   disableAllActions() {
     this.action_attack.disableInteractive().setColor('#555');
     this.action_defense.disableInteractive().setColor('#555');
     this.action_heal.disableInteractive().setColor('#555');
   }
 
+  //ativar botões
   enableAllActions() {
     this.action_attack.setInteractive().setColor('#FFF');
     this.action_defense.setInteractive().setColor('#FFF');
     this.action_heal.setInteractive().setColor('#FFF');
   }
 
+  //passar turno para inimigo
   passTurnToEnemy() {
     this.currentTurn = 'ENEMY';
     this.time.delayedCall(500, this.handleEnemyTurn, [], this);
   }
 
+  //IA do inimigo - pode curar ou atacar
   handleEnemyTurn() {
     if (this.player.active && this.enemy.active) {
       
@@ -144,4 +147,53 @@ export class Start extends Phaser.Scene {
       this.enableAllActions();
     }
   }
+  
+  //Dialogo 1: roxima luta ou descansar ?
+  choiceDialog() {
+    this.disableAllActions();
+  
+    this.time.delayedCall(500, () => {
+  
+      const dialogBackground = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 600, 200, 0x000000, 0.8).setStrokeStyle(2, 0xffffff);
+  
+      const questionText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 40, 'Inimigo derrotado! O que deseja fazer?', { fontSize: '24px', fill: '#FFF' }).setOrigin(0.5);
+  
+      const nextButton = this.add.text(this.scale.width / 2 - 150, this.scale.height / 2 + 40, 'Próximo Inimigo', { fontSize: '28px', fill: '#00FF00' })
+        .setOrigin(0.5)
+        .setInteractive()
+        .on('pointerdown', () => {
+          this.destroyChoiceDialog(); 
+          this.spawnNewEnemy();       
+          this.enableAllActions();   
+        });
+  
+      
+      const restButton = this.add.text(this.scale.width / 2 + 150, this.scale.height / 2 + 40, 'Descansar (Curar)', { fontSize: '28px', fill: '#FFFF00' })
+        .setOrigin(0.5)
+        .setInteractive()
+        .on('pointerdown', () => {
+          this.destroyChoiceDialog();
+          this.player.heal(() => {
+            this.spawnNewEnemy();
+            this.enableAllActions();
+          });
+        });
+  
+      this.choiceDialogElements = this.add.group([dialogBackground, questionText, nextButton, restButton]);
+    });
+  } 
+  
+  //Destruir o Dialogo 1
+  destroyChoiceDialog() {
+    if (this.choiceDialogElements) {
+      this.choiceDialogElements.clear(true, true);
+    }
+  }
+
+  //sumonar novo inimigo
+  spawnNewEnemy() {
+    const enemyKey = Math.random() < 0.5 ? 'torch' : 'pawn_red';
+    this.enemy = new Enemy(this, 1280 / 2 + 320, 720 / 2, 0, enemyKey);
+  }
+  
 }
