@@ -40,10 +40,16 @@ export class Start extends Phaser.Scene {
   //geração de elementos visuais
   generateUI(){
     
-    this.scoreText = this.add.text(16, 16, 'Pontos: 0', { 
-      fontSize: '32px', 
-      fill: '#FFF' 
-    });
+    this.scoreText = this.add.text(16, 16, 'Pontos: 0', {
+      fontSize: '72px',
+      fill: '#ffffff',
+      fontFamily: 'Brush Script ', 
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 6
+  
+      }
+    );
 
     this.action_attack.on('pointerdown', () => {
       if (this.currentTurn !== 'PLAYER' || this.onAction) return;
