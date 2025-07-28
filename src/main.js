@@ -1,7 +1,7 @@
 import { Preloader } from './scenes/Preloader.js';
 import { Start } from './scenes/Start.js';
 import { GameOver } from './scenes/GameOver.js';
-
+import { MainMenu } from './scenes/MainMenu.js';
 const config = {
   type: Phaser.AUTO,
   title: 'Overlord Rising',
@@ -11,7 +11,7 @@ const config = {
   height: 720,
   backgroundColor: '#000000',
   pixelArt: false,
-  scene: [Preloader, Start, GameOver],
+  scene: [Preloader, MainMenu ,Start, GameOver],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
