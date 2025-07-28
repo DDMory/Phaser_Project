@@ -17,6 +17,7 @@ export class Start extends Phaser.Scene {
   }
 
   create() {
+    //TODO: implementar o mundo + sistema de score
     const map = this.make.tilemap({key: "map"})
     const tileset = map.addTilesetImage("water", "tiles");
     const belowLayer = map.createLayer("camada_agua", tileset, 0, 0);
