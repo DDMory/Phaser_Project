@@ -24,17 +24,28 @@ export class Start extends Phaser.Scene {
     this.choiceDialogElements;
   }
 
+  init() {
+    this.onAction = false;
+    this.currentTurn = 'PLAYER';
+    this.score = 0;
+  }
+
   create() {
     // --- Configuração Inicial ---
     this.score = 0; // Garante que a pontuação zere ao reiniciar
     this.currentTurn = 'PLAYER'; // Garante que o turno comece com o jogador
     
     this.adicionarObjetos();
-    this.spawnNewEnemy(); // Cria o primeiro inimigo
+     // Cria o primeiro inimigo
 
     // --- Ouvintes de Eventos ---
     this.events.on('enemy-defeated', this.updateScore, this);
     this.events.on('enemy-defeated', this.showChoiceDialog, this);
+  }
+
+  shutdown() {
+    this.events.off('enemy-defeated', this.updateScore, this);
+    this.events.off('enemy-defeated', this.showChoiceDialog, this);
   }
 
   update() {
@@ -48,6 +59,7 @@ export class Start extends Phaser.Scene {
 
   adicionarObjetos() {
     this.player = new Player(this, 1280 / 2 - 320, 720 / 2, 0, 'purple_knight');
+    this.spawnNewEnemy();
     
     this.scoreText = this.add.text(16, 16, 'Pontos: 0', { fontSize: '32px', fill: '#FFF' });
 

@@ -6,8 +6,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.spriteKey = spriteKey;
     this.scene = scene;
 
-    this.health = 20;
-    this.maxHealth = 20;
+    this.health = 2;
+    this.maxHealth = 2;
     this.strength = 5;
 
     this.isAttacking = false;
