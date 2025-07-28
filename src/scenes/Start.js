@@ -13,7 +13,8 @@ export class Start extends Phaser.Scene {
     this.onAction = false;
     this.currentTurn = 'PLAYER';
     this.defenseSelected = false;
-    
+    this.score = 0;
+    this.scoreText
   }
 
   create() {
@@ -21,6 +22,13 @@ export class Start extends Phaser.Scene {
     const map = this.make.tilemap({key: "map"})
     const tileset = map.addTilesetImage("water", "tiles");
     const belowLayer = map.createLayer("camada_agua", tileset, 0, 0);
+
+    this.scoreText = this.add.text(16, 16, 'Pontos: 0', { 
+      fontSize: '32px', 
+      fill: '#FFF' 
+    });
+
+    this.events.on('enemy-defeated', this.updateScore, this);
 
     this.adicionarObjetos();
 
@@ -66,6 +74,11 @@ export class Start extends Phaser.Scene {
     if (this.player && !this.player.active) {
       this.scene.start('GameOver');
     }
+  }
+  
+  updateScore(points) {
+    this.score += points;
+    this.scoreText.setText('Pontos: ' + this.score);
   }
 
   adicionarObjetos() {
