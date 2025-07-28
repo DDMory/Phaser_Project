@@ -5,25 +5,26 @@ export class Start extends Phaser.Scene {
   constructor() {
     super('Start');
 
-    // Propriedades da cena, resetadas a cada reinício
+    
     this.player;
     this.enemy;
     this.action_attack;
     this.action_defense;
     this.action_heal;
     
-    // Controle de estado do jogo
+    
     this.onAction = false;
     this.currentTurn = 'PLAYER';
     
-    // Sistema de Pontuação
+    
     this.score = 0;
     this.scoreText;
 
-    // Elementos do diálogo
+    
     this.choiceDialogElements;
   }
 
+  //Valores iniciais ao entrar na cena
   init() {
     this.onAction = false;
     this.currentTurn = 'PLAYER';
@@ -31,18 +32,18 @@ export class Start extends Phaser.Scene {
   }
 
   create() {
-    // --- Configuração Inicial ---
-    this.score = 0; // Garante que a pontuação zere ao reiniciar
-    this.currentTurn = 'PLAYER'; // Garante que o turno comece com o jogador
+   
+    this.score = 0;
+    this.currentTurn = 'PLAYER';
     
     this.adicionarObjetos();
-     // Cria o primeiro inimigo
 
-    // --- Ouvintes de Eventos ---
+    // eventos - gatilhos
     this.events.on('enemy-defeated', this.updateScore, this);
     this.events.on('enemy-defeated', this.showChoiceDialog, this);
   }
 
+  //desligar gatlhos quando sair da cena
   shutdown() {
     this.events.off('enemy-defeated', this.updateScore, this);
     this.events.off('enemy-defeated', this.showChoiceDialog, this);
@@ -55,8 +56,8 @@ export class Start extends Phaser.Scene {
     }
   }
 
-  // --- Métodos de Gerenciamento de Jogo ---
-
+ 
+  //logica + criação de instancias
   adicionarObjetos() {
     this.player = new Player(this, 1280 / 2 - 320, 720 / 2, 0, 'purple_knight');
     this.spawnNewEnemy();
@@ -90,6 +91,7 @@ export class Start extends Phaser.Scene {
     });
   }
 
+  //summonar inimigo
   spawnNewEnemy() {
     if (this.enemy) {
         this.enemy.destroy();
@@ -98,11 +100,13 @@ export class Start extends Phaser.Scene {
     this.enemy = new Enemy(this, 1280 / 2 + 320, 720 / 2, 0, enemyKey);
   }
 
+  //passar turno para inimigo
   passTurnToEnemy() {
     this.currentTurn = 'ENEMY';
     this.time.delayedCall(500, this.handleEnemyTurn, [], this);
   }
 
+  //IA do inimigo
   handleEnemyTurn() {
     if (!this.player.active || !this.enemy.active) {
         this.onAction = false;
@@ -128,8 +132,8 @@ export class Start extends Phaser.Scene {
     }
   }
   
-  // --- Métodos de UI e Eventos ---
 
+  //UI score
   updateScore(points) {
     this.score += points;
     this.scoreText.setText('Pontos: ' + this.score);
