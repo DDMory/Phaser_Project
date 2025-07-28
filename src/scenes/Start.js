@@ -162,9 +162,12 @@ export class Start extends Phaser.Scene {
         .setOrigin(0.5)
         .setInteractive()
         .on('pointerdown', () => {
-          this.destroyChoiceDialog(); 
+          this.currentTurn = 'PLAYER';
+          this.onAction = false;
+          
           this.spawnNewEnemy();       
           this.enableAllActions();   
+          this.destroyChoiceDialog(); 
         });
   
       
@@ -172,6 +175,9 @@ export class Start extends Phaser.Scene {
         .setOrigin(0.5)
         .setInteractive()
         .on('pointerdown', () => {
+          this.currentTurn = 'PLAYER';
+          this.onAction = false;
+          
           this.destroyChoiceDialog();
           this.player.heal(() => {
             this.spawnNewEnemy();
