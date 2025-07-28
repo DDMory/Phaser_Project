@@ -94,7 +94,7 @@ export class Preloader extends Phaser.Scene
         })
 
         //Trocar de cena
-        this.scene.start('Start')
+        this.scene.start('GameOver')
     }
 
 }
