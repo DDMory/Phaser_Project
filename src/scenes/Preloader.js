@@ -10,9 +10,16 @@ export class Preloader extends Phaser.Scene
         this.load.spritesheet('meat','../../assets/M_Spawn.png', {frameWidth: 128, frameHeight: 128 })
         this.load.spritesheet('torch', '../../assets/Torch_Yellow.png', {frameWidth: 192, frameHeight: 192 })
         this.load.spritesheet('pawn_red', '../../assets/Pawn_Red.png', {frameWidth: 192, frameHeight: 192 })
-    }
     
+        this.load.image("tiles", "../../assets/world/ground/Water Background color.png");
+        this.load.tilemapTiledJSON("map", "../../assets/world/ground/water_label.json");
+    }
+
     create() {
+
+
+
+
 
         //Animações
             //Player

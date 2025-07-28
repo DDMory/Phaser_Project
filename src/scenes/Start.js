@@ -17,9 +17,13 @@ export class Start extends Phaser.Scene {
   }
 
   create() {
+    const map = this.make.tilemap({key: "map"})
+    const tileset = map.addTilesetImage("water", "tiles");
+    const belowLayer = map.createLayer("camada_agua", tileset, 0, 0);
+
     this.adicionarObjetos();
 
-    // ✅ O 'while' foi removido. Os listeners são adicionados apenas uma vez.
+    
     this.action_attack.on('pointerdown', () => {
       if (this.currentTurn !== 'PLAYER' || this.onAction) return;
 
