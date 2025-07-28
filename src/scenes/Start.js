@@ -18,26 +18,35 @@ export class Start extends Phaser.Scene {
   }
 
   create() {
-    //TODO: implementar o mundo + sistema de score
-    const map = this.make.tilemap({key: "map"})
-    const tileset = map.addTilesetImage("water", "tiles");
-    const belowLayer = map.createLayer("camada_agua", tileset, 0, 0);
+    //Geração 
+    this.createScenario();
+    this.summomCharacters();
+    this.generateUI();
+   
+    //Eventos/Gatilhos
+    this.events.on('enemy-defeated', this.updateScore, this);
+    this.events.on('enemy-defeated', this.choiceDialog, this);
+  }
 
+  //metodo update
+  update() {
+
+    //verificar se o player morreu
+    if (this.player && !this.player.active) {
+      this.scene.start('GameOver');
+    }
+  }
+
+  //geração de elementos visuais
+  generateUI(){
+    
     this.scoreText = this.add.text(16, 16, 'Pontos: 0', { 
       fontSize: '32px', 
       fill: '#FFF' 
     });
 
-    this.events.on('enemy-defeated', this.updateScore, this);
-    this.events.on('enemy-defeated', this.choiceDialog, this);
-
-    this.summomCharacters();
-    
     this.action_attack.on('pointerdown', () => {
       if (this.currentTurn !== 'PLAYER' || this.onAction) return;
-
-
-
       this.onAction = true;
       this.disableAllActions();
       
@@ -70,13 +79,11 @@ export class Start extends Phaser.Scene {
     });
   }
 
-  //metodo update
-  update() {
-
-    //verificar se o player morreu
-    if (this.player && !this.player.active) {
-      this.scene.start('GameOver');
-    }
+  //geração do cenario
+  createScenario(){
+    const map = this.make.tilemap({key: "map"})
+    const tileset = map.addTilesetImage("water", "tiles");
+    const belowLayer = map.createLayer("camada_agua", tileset, 0, 0);
   }
   
   //atualizar pontuação
@@ -101,7 +108,6 @@ export class Start extends Phaser.Scene {
       .setInteractive();
   }
 
-  
   //desativas botões
   disableAllActions() {
     this.action_attack.disableInteractive().setColor('#555');
@@ -177,7 +183,7 @@ export class Start extends Phaser.Scene {
         .on('pointerdown', () => {
           this.currentTurn = 'PLAYER';
           this.onAction = false;
-          
+
           this.destroyChoiceDialog();
           this.player.heal(() => {
             this.spawnNewEnemy();
