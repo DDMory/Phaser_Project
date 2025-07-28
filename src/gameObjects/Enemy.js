@@ -1,5 +1,3 @@
-import ASSETS from '../assets.js';
-
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, enemyID, spriteKey) {
     super(scene, x, y, spriteKey, enemyID);
@@ -9,6 +7,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.scene = scene;
 
     this.health = 10;
+    this.maxHealth = 10;
     this.strength = 3;
 
     this.isAttacking = false;
@@ -20,7 +19,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.originalY = y;
 
     this.play('idle_' + this.spriteKey);
-
   }
 
   attack = (target, onCompleteCallback) => {
@@ -42,13 +40,11 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       duration: 400,
       ease: 'Sine.easeInOut',
       onComplete: () => {
-        if(target.isDefending){
-          
+        if (target.isDefending) {
           target.defense();
           target.showText('Defendido!', '#00BFFF');
-          target.isDefending = false; 
-
-        }else{
+          target.isDefending = false;
+        } else {
           if (isCritical) {
             this.scene.cameras.main.shake(250, 0.015);
           }
@@ -57,7 +53,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         const attackAnim = 'attack_' + this.spriteKey;
         this.play(attackAnim);
-
 
         this.once('animationcomplete-' + attackAnim, () => {
           this.scene.tweens.add({
@@ -68,7 +63,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
             onComplete: () => {
               this.isAttacking = false;
               this.play('idle_' + this.spriteKey);
-
               if (onCompleteCallback) onCompleteCallback();
             },
           });
@@ -81,12 +75,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     const dodgeChance = 0.45;
     if (Math.random() < dodgeChance) {
       this.defense();
-      this.showText('Esquivou!', 0xffd700);
+      this.showText('Esquivou!', '#ffd700');
       return;
     }
 
     this.health -= damage;
-    this.showText(`-${damage}`, 0xff0000);
+    this.showText(`-${damage}`, '#ff0000');
 
     this.scene.tweens.add({
       targets: this,
@@ -97,16 +91,19 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     if (this.health <= 0) {
       this.health = 0;
+      this.scene.events.emit('enemy-defeated', 150);
       this.destroy();
     }
   };
 
   defense = (onCompleteCallback) => {
-    if (this.isDefending) return;
+    if (this.isDefending) {
+        if(onCompleteCallback) onCompleteCallback();
+        return;
+    }
     this.isDefending = true;
 
     this.play('walking_' + this.spriteKey);
-
     this.scene.tweens.add({
       targets: this,
       x: this.x + 100,
@@ -116,10 +113,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       onComplete: () => {
         this.isDefending = false;
         this.play('idle_' + this.spriteKey);
-
-        if (onCompleteCallback) {
-          onCompleteCallback();
-        }
+        if (onCompleteCallback) onCompleteCallback();
       },
     });
   };
@@ -128,53 +122,37 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (this.isHealing) return;
     this.isHealing = true;
 
-    const meatSprite = this.scene.add.sprite(
-      this.originalX,
-      this.originalY - 100,
-      'meat'
-    );
-    meatSprite.play('meat');
-
+    const meatSprite = this.scene.add.sprite(this.originalX, this.originalY - 100, 'meat').play('meat');
     this.scene.tweens.add({
       targets: meatSprite,
       y: this.originalY,
       duration: 600,
       ease: 'Linear',
       onComplete: () => {
-        if (this.health < 10) this.health += 5;
-        else this.health = 10;
-
+        this.health = Math.min(this.maxHealth, this.health + 5);
         meatSprite.destroy();
         this.isHealing = false;
-        this.showText('+5', 0x00ff00);
-
-        if (onCompleteCallback) {
-          onCompleteCallback();
-        }
+        this.showText('+5', '#00ff00');
+        if (onCompleteCallback) onCompleteCallback();
       },
     });
   };
 
   showText = (text, color) => {
-    const damageText = this.scene.add
-      .text(this.x, this.y - 100, text, {
-        fontSize: '50px',
-        color: Phaser.Display.Color.ValueToColor(color).rgba,
-        stroke: '#000000',
-        strokeThickness: 2,
-      })
-      .setOrigin(0.5)
-      .setDepth(10);
+    const damageText = this.scene.add.text(this.x, this.y - 100, text, {
+      fontSize: '24px',
+      fill: color,
+      stroke: '#000000',
+      strokeThickness: 4
+    }).setOrigin(0.5).setDepth(10);
 
     this.scene.tweens.add({
       targets: damageText,
-      y: damageText.y - 100,
+      y: damageText.y - 50,
       alpha: 0,
       duration: 800,
       ease: 'Cubic.easeOut',
-      onComplete: () => {
-        damageText.destroy();
-      },
+      onComplete: () => damageText.destroy(),
     });
   };
 }

@@ -1,22 +1,23 @@
-import ASSETS from '../assets.js';
-
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, knightId) {
-    super(scene, x, y, ASSETS.spritesheet.knight.key, knightId);
+  constructor(scene, x, y, playerID, spriteKey) {
+    super(scene, x, y, spriteKey, playerID);
     scene.add.existing(this);
 
+    this.spriteKey = spriteKey;
     this.scene = scene;
+
     this.health = 20;
+    this.maxHealth = 20;
     this.strength = 5;
 
     this.isAttacking = false;
     this.isDefending = false;
     this.isHealing = false;
-
+    
     this.originalX = x;
     this.originalY = y;
 
-    this.play('idle_knight');
+    this.play('idle_' + this.spriteKey);
   }
 
   attack = (target, onCompleteCallback) => {
@@ -30,9 +31,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       ease: 'Sine.easeInOut',
       onComplete: () => {
         target.takeHit(this.strength);
-        this.play('attack_knight');
+        const attackAnim = 'attack_' + this.spriteKey;
+        this.play(attackAnim);
 
-        this.once('animationcomplete-attack_knight', () => {
+        this.once('animationcomplete-' + attackAnim, () => {
           this.scene.tweens.add({
             targets: this,
             x: this.originalX,
@@ -40,8 +42,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             ease: 'Sine.easeInOut',
             onComplete: () => {
               this.isAttacking = false;
-              this.play('idle_knight');
-
+              this.play('idle_' + this.spriteKey);
               if (onCompleteCallback) onCompleteCallback();
             },
           });
@@ -51,10 +52,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   };
 
   defense = (onCompleteCallback) => {
-    if (this.isDefending) return;
+    if (this.isDefending) { // Previne que a defesa seja chamada de novo se já estiver defendendo
+        if(onCompleteCallback) onCompleteCallback();
+        return;
+    }
     this.isDefending = true;
 
-    this.play('walking_knight');
+    this.play('walking_' + this.spriteKey);
     this.scene.tweens.add({
       targets: this,
       x: this.x - 100,
@@ -63,8 +67,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       yoyo: true,
       onComplete: () => {
         this.isDefending = false;
-        this.play('idle_knight');
-
+        this.play('idle_' + this.spriteKey);
         if (onCompleteCallback) onCompleteCallback();
       },
     });
@@ -74,26 +77,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.isHealing) return;
     this.isHealing = true;
 
-    const meatSprite = this.scene.add.sprite(
-      this.originalX,
-      this.originalY - 100,
-      'meat'
-    );
-    meatSprite.play('meat');
-
+    const meatSprite = this.scene.add.sprite(this.originalX, this.originalY - 100, 'meat').play('meat');
     this.scene.tweens.add({
       targets: meatSprite,
       y: this.originalY,
       duration: 600,
       ease: 'Linear',
       onComplete: () => {
-        if (this.health < 20) this.health += 5;
-        else this.health = 20;
-
+        this.health = Math.min(this.maxHealth, this.health + 5);
         meatSprite.destroy();
         this.isHealing = false;
-        this.showText('+5', 0x00ff00);
-
+        this.showText('+5', '#00ff00');
         if (onCompleteCallback) onCompleteCallback();
       },
     });
@@ -101,13 +95,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   takeHit = (damage) => {
     this.health -= damage;
-    this.showText(`-${damage}`, 0xff0000);
-
+    this.showText(`-${damage}`, '#ff0000');
+    
     this.scene.tweens.add({
-      targets: this,
-      alpha: { from: 1, to: 0.5 },
-      duration: 100,
-      yoyo: true,
+        targets: this,
+        alpha: { from: 1, to: 0.5 },
+        duration: 100,
+        yoyo: true,
     });
 
     if (this.health <= 0) {
@@ -117,15 +111,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   };
 
   showText = (text, color) => {
-    const damageText = this.scene.add
-      .text(this.x, this.y - 100, text, {
-        fontSize: '50px',
-        color: Phaser.Display.Color.ValueToColor(color).rgba,
-        stroke: '#000000',
-        strokeThickness: 2,
-      })
-      .setOrigin(0.5)
-      .setDepth(10);
+    const damageText = this.scene.add.text(this.x, this.y - 100, text, {
+      fontSize: '24px',
+      fill: color,
+      stroke: '#000000',
+      strokeThickness: 4
+    }).setOrigin(0.5).setDepth(10);
 
     this.scene.tweens.add({
       targets: damageText,
