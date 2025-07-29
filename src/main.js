@@ -2,6 +2,7 @@ import { Preloader } from './scenes/Preloader.js';
 import { MainMenu } from './scenes/MainMenu.js';
 import { Start } from './scenes/Start.js';
 import { GameOver } from './scenes/GameOver.js';
+import {StoryScene} from './scenes/Story.js';
 
 const config = {
   type: Phaser.AUTO,
@@ -13,7 +14,8 @@ const config = {
   pixelArt: false,
   scene: [
     Preloader, 
-    MainMenu, 
+    MainMenu,
+    StoryScene, 
     Start, 
     GameOver
   ],
