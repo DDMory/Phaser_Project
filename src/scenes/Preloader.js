@@ -4,11 +4,17 @@ export class Preloader extends Phaser.Scene {
     }
    
     preload() {
-        // Carrega todos os spritesheets
         this.load.spritesheet('purple_knight', '../../assets/Warrior_Purple.png', { frameWidth: 192, frameHeight: 192 });
         this.load.spritesheet('meat','../../assets/M_Spawn.png', {frameWidth: 128, frameHeight: 128 });
         this.load.spritesheet('torch', '../../assets/Torch_Yellow.png', {frameWidth: 192, frameHeight: 192 });
         this.load.spritesheet('pawn_red', '../../assets/Pawn_Red.png', {frameWidth: 192, frameHeight: 192 });
+
+        this.load.image("green_grass_tile", '../../assets/world/ground/Grass_ground1.png')
+        this.load.image("fall_grass_tile", '../../assets/world/ground/Grass_ground2.png')
+        this.load.image("Water_tile", '../../assets/world/ground/Water_Background.png')
+
+        this.load.tilemapTiledJSON("layer_water",'../../assets/world/world_layer_water.json' )
+        this.load.tilemapTiledJSON("layer_grass",'../../assets/world/world_grass_layer.json' )
     }
     
     create() {

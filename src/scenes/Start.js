@@ -36,6 +36,7 @@ export class Start extends Phaser.Scene {
     this.score = 0;
     this.currentTurn = 'PLAYER';
     
+    this.criarMundo();
     this.adicionarObjetos();
 
     // eventos - gatilhos
@@ -56,6 +57,19 @@ export class Start extends Phaser.Scene {
     }
   }
 
+  criarMundo(){
+    
+    const waterMap = this.make.tilemap({key: "layer_water"})
+    const tileWaterSet = waterMap.addTilesetImage("Water_Background", "Water_tile");
+    const WaterLayerCreate = waterMap.createLayer("waterLayer", tileWaterSet, 0, 0);
+    
+    const grassMap = this.make.tilemap({key: "layer_grass"})
+    const tileGrassGreen = grassMap.addTilesetImage("grama_verde_tile", "green_grass_tile");
+    const GrassGreenCreate = grassMap.createLayer("grassLayer", tileGrassGreen, 0, 0);
+    
+    const tileGrassFall = grassMap.addTilesetImage("grass_fall_tile", "fall_grass_tile");
+    const GrassFallCreate = grassMap.createLayer("grassFallLayer", tileGrassFall, 0, 0);
+  }
  
   //logica + criação de instancias
   adicionarObjetos() {
