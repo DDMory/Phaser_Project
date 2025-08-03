@@ -84,6 +84,6 @@ export class Preloader extends Phaser.Scene {
         });
 
         // Inicia o Menu Principal após carregar tudo
-        this.scene.start('StoryScene');
+        this.scene.start('MainMenu');
     }
 }

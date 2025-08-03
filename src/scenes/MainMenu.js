@@ -35,7 +35,7 @@ export class MainMenu extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {
-        this.scene.start('Start');
+        this.scene.start('StoryScene');
       })
       .on('pointerover', () => playButton.setFill('#FFFF00'))
       .on('pointerout', () => playButton.setFill('#00FF00'));
