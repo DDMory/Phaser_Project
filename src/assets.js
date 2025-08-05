@@ -1,3 +1,4 @@
+/*
 export default {
     'spritesheet': {
         knight: {
@@ -16,3 +17,4 @@ export default {
         }
     }
 };
+*/
